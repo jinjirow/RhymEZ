@@ -4,53 +4,57 @@
 <meta charset="UTF-8">
 <body>
   <h3 style='text-align: center'>Phoneme Search</h3>
-  <br/>
-  <form action="{{ url_for('querySongs') }}" method="post" class="form-inline" style="width: 30%; margin: auto">
-    <div style='text-align: center'>
-      <input type="text" class="form-control" placeholder="Enter a Song or Artist" name="QueryBox">
-      <input type="submit" class="btn btn-default" value="Go">
-    </div>
-  </form>
-  {% if songs %}
-    <hr style='width: 90%'/>
-    <div class="well" style="width: 80%; margin: auto; text-align: center">
-      {% for s in songs %}
-        <form action="{{ url_for('getPhones') }}" method="post">
-          <input type="hidden" value="{{loop.index}}-{{ s }}" name="SongID"/>
-          <input class="btn btn-default" type="submit" value="{{ s }}"/>
-        </form>
-      {% endfor %}
-    </div>
-  {% endif %}
-  {% if lyrics %}
-  <hr style="width: 90%; color: red"/>
-  <div class="container">
-    <div class="row">
-      <div class="col col-md-8">
-          <!--<hr style="width: 90%"/>
-          <div style="width: 80%; margin: auto">-->
-            {% if selected %}
-              <h4>{{ selected }}</h4>
+  {% if auth %}
+    <br/>
+    <form action="{{ url_for('querySongs') }}" method="post" class="form-inline" style="width: 30%; margin: auto">
+      <div style='text-align: center'>
+        <input type="text" class="form-control" placeholder="Enter a Song or Artist" name="QueryBox">
+        <input type="submit" class="btn btn-default" value="Go">
+      </div>
+    </form>
+    {% if songs %}
+      <hr style='width: 90%'/>
+      <div class="well" style="width: 80%; margin: auto; text-align: center">
+        {% for s in songs %}
+          <form action="{{ url_for('getPhones') }}" method="post">
+            <input type="hidden" value="{{loop.index}}-{{ s }}" name="SongID"/>
+            <input class="btn btn-default" type="submit" value="{{ s }}"/>
+          </form>
+        {% endfor %}
+      </div>
+    {% endif %}
+    {% if lyrics %}
+      <hr style="width: 90%"/>
+      <div class="container">
+        <div class="row">
+          <div class="col col-md-8">
+              <!--<hr style="width: 90%"/>
+              <div style="width: 80%; margin: auto">-->
+                {% if selected %}
+                  <h4>{{ selected }}</h4>
+                {% endif %}
+                <center>
+                  <pre>
+                    {{ lyrics }}
+                  </pre>
+                </center>
+              <!--</div>-->
+          </div>
+          <div class="col-6 col-md-4">
+            {% if phonemes %}
+                <h4> Unique Sounds: {{ p_count }}</h4>
+                <ul>
+                  {% for value in phonemes %}
+                    <li><span style="color:{{ value.color|e }}">{{ value.sound|e }}</span> -  {{ value.count|e }}</li>
+                  {% endfor %}
+                </ul>
             {% endif %}
-            <center>
-              <pre>
-                {{ lyrics }}
-              </pre>
-            </center>
-          <!--</div>-->
+          </div>
+        </div>
       </div>
-      <div class="col-6 col-md-4">
-        {% if phonemes %}
-            <h4> Unique Sounds: {{ p_count }}</h4>
-            <ul>
-              {% for value in phonemes %}
-                <li><span style="color:{{ value.color|e }}">{{ value.sound|e }}</span> -  {{ value.count|e }}</li>
-              {% endfor %}
-            </ul>
-        {% endif %}
-      </div>
-    </div>
-  </div>
+    {% endif %}
+  {% else %}
+    <form action="{{ url_for('authorizeUser') }}" method="post" style="text-align: center"><input type="submit" class="btn btn-default" value="Login with Genius"/></form>
   {% endif %}
 </body>
 

@@ -4,7 +4,6 @@ import requests
 import pronouncing
 from bs4 import BeautifulSoup
 import random, re
-from gettoken import TOKEN # Reading access token from external file until I implement OAuth authentication flow
 
 verse_list = []
 
@@ -37,7 +36,7 @@ def findPhonemes(lyrics):
     accuracy = float(hc)/float(oc)
     return phonemes
 
-def getLyrics(path): # Scrape Genius website for lyrics. Followed this example from: https://bigishdata.com/2016/09/27/getting-song-lyrics-from-geniuss-api-scraping/
+def getLyrics(path, TOKEN): # Scrape Genius website for lyrics. Followed this example from: https://bigishdata.com/2016/09/27/getting-song-lyrics-from-geniuss-api-scraping/
     b_url = "http://api.genius.com"
     headers = {'Authorization': 'Bearer ' + TOKEN}
     song_url = b_url + path
@@ -50,7 +49,7 @@ def getLyrics(path): # Scrape Genius website for lyrics. Followed this example f
     verses = html.find('div', class_='lyrics').get_text().encode('utf-8')
     return verses, findPhonemes(verses.split("\n\n"))
 
-def getSongs(query): # Returns a list of song titles and their respective api_paths
+def getSongs(query, TOKEN): # Returns a list of song titles and their respective api_paths
     ph_l, titles, urls = [], [], []
     base_url = "http://api.genius.com"
     headers = {'Authorization': 'Bearer ' + TOKEN}
