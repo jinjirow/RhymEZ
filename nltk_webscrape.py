@@ -1,9 +1,11 @@
 # Phoneme detection using 'pronouncing' library.
 import re
 import requests
+import ast
 import pronouncing
 from bs4 import BeautifulSoup
 import random, re
+from ss_params import BASE_URL
 
 verse_list = []
 
@@ -14,6 +16,42 @@ class P_Color:
         self.sound = sound
     def increment(self):
         self.count += 1
+
+
+# API Requests
+
+def getLyrics(path, TOKEN): # Scrape Genius website for lyrics. Followed this example from: https://bigishdata.com/2016/09/27/getting-song-lyrics-from-geniuss-api-scraping/
+    headers = {'Authorization': 'Bearer ' + TOKEN}
+    song_url = BASE_URL + path
+    response = requests.get(song_url, headers=headers)
+    json = response.json()
+    path = json["response"]["song"]["path"]
+    page_url = "http://genius.com" + path
+    page = requests.get(page_url)
+    html = BeautifulSoup(page.text, "html.parser")
+    verses = html.find('div', class_='lyrics').get_text().encode('utf-8')
+    return verses, findPhonemes(verses.split("\n\n"))
+
+def getAccountInfo(TOKEN):
+    headers = {'Authorization': 'Bearer ' + TOKEN}
+    search_url = BASE_URL + "/account"
+    response = requests.get(search_url, headers=headers)
+    parsed = response.json()
+    account = parsed['response']['user']
+    return account['header_image_url'].encode('utf-8'), account['name'].encode('utf-8')
+
+def getSongs(query, TOKEN): # Returns a list of song titles and their respective api_paths
+    ph_l, titles, urls = [], [], []
+    headers = {'Authorization': 'Bearer ' + TOKEN}
+    search_url = BASE_URL + "/search"
+    song_title = query
+    params = {'q': song_title}
+    response = requests.get(search_url, params=params, headers=headers)
+    json = response.json()
+    for hit in json["response"]["hits"]:
+        titles.append(str((hit["result"]["full_title"]).encode('utf-8')))
+        urls.append((hit["result"]["api_path"]))
+    return titles, urls
 
 def findPhonemes(lyrics):
     phonemes = []
@@ -36,32 +74,6 @@ def findPhonemes(lyrics):
     accuracy = float(hc)/float(oc)
     return phonemes
 
-def getLyrics(path, TOKEN): # Scrape Genius website for lyrics. Followed this example from: https://bigishdata.com/2016/09/27/getting-song-lyrics-from-geniuss-api-scraping/
-    b_url = "http://api.genius.com"
-    headers = {'Authorization': 'Bearer ' + TOKEN}
-    song_url = b_url + path
-    response = requests.get(song_url, headers=headers)
-    json = response.json()
-    path = json["response"]["song"]["path"]
-    page_url = "http://genius.com" + path
-    page = requests.get(page_url)
-    html = BeautifulSoup(page.text, "html.parser")
-    verses = html.find('div', class_='lyrics').get_text().encode('utf-8')
-    return verses, findPhonemes(verses.split("\n\n"))
-
-def getSongs(query, TOKEN): # Returns a list of song titles and their respective api_paths
-    ph_l, titles, urls = [], [], []
-    base_url = "http://api.genius.com"
-    headers = {'Authorization': 'Bearer ' + TOKEN}
-    search_url = base_url + "/search"
-    song_title = query
-    params = {'q': song_title}
-    response = requests.get(search_url, params=params, headers=headers)
-    json = response.json()
-    for hit in json["response"]["hits"]:
-        titles.append(str((hit["result"]["full_title"]).encode('utf-8')))
-        urls.append((hit["result"]["api_path"]))
-    return titles, urls
 
 def parsePhonemes(ph):
     color_mappings = {}
@@ -76,7 +88,7 @@ def parsePhonemes(ph):
                         if not sound == '':
                             candidate = re.sub('\d', '', sound)
                             if candidate not in color_mappings:
-                                new_color = P_Color('#%02X%02X%02X' % (r(), r(), r()), candidate) # Generate random RGB value for every unique phoneme
+                                new_color = P_Color('#%02X%02X%02X' % (r(), r(), r()), candidate) # Generate random RGB value for every unique phoneme.
                                 color_mappings[candidate] = new_color
                             else:
                                 color_mappings[candidate].count += 1

@@ -1,7 +1,7 @@
 import sys, operator, rauth, ast
 
 from flask import Flask, render_template, request, session, redirect, url_for
-from nltk_webscrape import getSongs, getLyrics, parsePhonemes, colorGraphemes
+from nltk_webscrape import getSongs, getLyrics, parsePhonemes, getAccountInfo
 from ss_params import CLIENT_ID, CLIENT_SECRET, BASE_URL, REDIRECT_URI, SECRET_KEY
 
 sgs = []
@@ -23,12 +23,16 @@ genius = rauth.OAuth2Service(
 
 @app.route('/')
 def renderInit(): # Session should only exist if the user has authenticated with Genius
-    auth = True if(session) else False
-    return render_template("index.html", auth=auth)
+    if(session):
+        auth, acc, name = True, session['avatar_url'], session['name']
+    else:
+        auth, acc, name = False, '', ''
+    return render_template("index.html", auth=auth, url=acc, name=name)
 
 @app.route('/login', methods=['POST'])
 def authorizeUser():
     params = {'redirect_uri': REDIRECT_URI,
+              'scope' : 'me',
               'response_type': 'code'}
     url = genius.get_authorize_url(**params)
     return redirect(url)
@@ -41,6 +45,7 @@ def exchangeToken():
     response = genius.get_raw_access_token(data=data, method='POST')
     parsed = ast.literal_eval(response.text)
     session['genius_token'] = parsed['access_token']
+    session['avatar_url'], session['name'] = getAccountInfo(parsed['access_token'])
     return renderInit()
 
 @app.route('/query', methods = ['POST'])
@@ -53,7 +58,7 @@ def querySongs():
     sgs.append(titles)
     for i, url in enumerate(urls):
         maps[str(i + 1)] = str(url)
-    return render_template("index.html", songs=titles, auth=True)
+    return render_template("index.html", songs=titles, auth=True, acc=session['avatar_url'])
 
 
 @app.route('/query/lyrics', methods = ['POST'])
@@ -63,10 +68,12 @@ def getPhones():
     selected = maps[form[0]]
     lyrics, phonemes = getLyrics(selected, session['genius_token'])
     stats = parsePhonemes(phonemes)
-    text = colorGraphemes(phonemes, stats)
+    #text = colorGraphemes(phonemes, stats)
     for color in (sorted(stats.values(), key = operator.attrgetter('count'), reverse=True)):
         sorted_list.append(color)
-    return render_template("index.html", lyrics = lyrics, songs = sgs[0], selected = form[1], phonemes = sorted_list, p_count = sorted_list.__len__(), auth=True)
+    return render_template("index.html", lyrics = lyrics, songs = sgs[0], selected = form[1],
+                           phonemes = sorted_list, p_count = sorted_list.__len__(), auth=True,
+                           acc=session['avatar_url'])
 
 
 if __name__ == "__main__":

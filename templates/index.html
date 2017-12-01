@@ -6,6 +6,9 @@
   <h3 style='text-align: center'>Phoneme Search</h3>
   {% if auth %}
     <br/>
+    <!--
+    <p> logged in as: {{ name }} </p>
+    <img src="{{ acc }}"/>-->
     <form action="{{ url_for('querySongs') }}" method="post" class="form-inline" style="width: 30%; margin: auto">
       <div style='text-align: center'>
         <input type="text" class="form-control" placeholder="Enter a Song or Artist" name="QueryBox">
@@ -28,8 +31,6 @@
       <div class="container">
         <div class="row">
           <div class="col col-md-8">
-              <!--<hr style="width: 90%"/>
-              <div style="width: 80%; margin: auto">-->
                 {% if selected %}
                   <h4>{{ selected }}</h4>
                 {% endif %}
@@ -38,16 +39,19 @@
                     {{ lyrics }}
                   </pre>
                 </center>
-              <!--</div>-->
           </div>
           <div class="col-6 col-md-4">
             {% if phonemes %}
-                <h4> Unique Sounds: {{ p_count }}</h4>
-                <ul>
-                  {% for value in phonemes %}
-                    <li><span style="color:{{ value.color|e }}">{{ value.sound|e }}</span> -  {{ value.count|e }}</li>
-                  {% endfor %}
-                </ul>
+            <ul class="nav nav-tabs">
+              <li class="active"><a href="#">Sounds</a></li>
+              <li class=><a href="#">Phonemes</a></li>
+            </ul>
+            <h4> Unique Sounds: {{ p_count }}</h4>
+            <ul>
+              {% for value in phonemes %}
+                <li><span style="color:{{ value.color|e }}">{{ value.sound|e }}</span> -  {{ value.count|e }}</li>
+              {% endfor %}
+            </ul>
             {% endif %}
           </div>
         </div>
