@@ -6,6 +6,8 @@ import pronouncing
 from bs4 import BeautifulSoup
 import random, re
 from ss_params import BASE_URL
+from collections import defaultdict
+
 
 verse_list = []
 
@@ -117,3 +119,12 @@ def colorGraphemes(phonemes, sts):
             final_div += '\n'
         final_div += '\n\n'
     return
+
+def find_rhymes(lyrics):
+    regex = re.compile(r'[^a-zA-Z]')
+    rhyme_dict = defaultdict(list)
+    for word in lyrics:
+        word = regex.sub('', word) # make every word only alphabetical
+        for phone in pronouncing.phones_for_word(word):
+            rhyme_dict[tuple(phone.split()[-2:])].append(word)
+    return rhyme_dict
