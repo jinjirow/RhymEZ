@@ -29,6 +29,7 @@ def renderInit(): # Session should only exist if the user has authenticated with
         auth, acc, name = False, '', ''
     return render_template("index.html", auth=auth, url=acc, name=name)
 
+
 @app.route('/login', methods=['POST'])
 def authorizeUser():
     params = {'redirect_uri': REDIRECT_URI,
@@ -36,6 +37,7 @@ def authorizeUser():
               'response_type': 'code'}
     url = genius.get_authorize_url(**params)
     return redirect(url)
+
 
 @app.route('/authorized')
 def exchangeToken():
@@ -47,6 +49,7 @@ def exchangeToken():
     session['genius_token'] = parsed['access_token']
     session['avatar_url'], session['name'] = getAccountInfo(parsed['access_token'])
     return renderInit()
+
 
 @app.route('/query', methods = ['POST'])
 def querySongs():
@@ -68,7 +71,6 @@ def getPhones():
     selected = maps[form[0]]
     lyrics, phonemes = getLyrics(selected, session['genius_token'])
     stats = parsePhonemes(phonemes)
-    #text = colorGraphemes(phonemes, stats)
     for color in (sorted(stats.values(), key = operator.attrgetter('count'), reverse=True)):
         sorted_list.append(color)
     return render_template("index.html", lyrics = lyrics, songs = sgs[0], selected = form[1],

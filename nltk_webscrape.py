@@ -1,7 +1,5 @@
 # Phoneme detection using 'pronouncing' library.
-import re
 import requests
-import ast
 import pronouncing
 from bs4 import BeautifulSoup
 import random, re
@@ -90,7 +88,7 @@ def parsePhonemes(ph):
                         if not sound == '':
                             candidate = re.sub('\d', '', sound)
                             if candidate not in color_mappings:
-                                new_color = P_Color('#%02X%02X%02X' % (r(), r(), r()), candidate) # Generate random RGB value for every unique phoneme.
+                                new_color = P_Color('#%02X%02X%02X' % (r(), r(), r()), candidate) # Generate random RGB value for every unique sound/phoneme.
                                 color_mappings[candidate] = new_color
                             else:
                                 color_mappings[candidate].count += 1
