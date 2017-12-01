@@ -42,7 +42,7 @@ def authorizeUser():
 @app.route('/authorized')
 def exchangeToken():
     if not 'code' in request.args:
-        return redirect(url_for(renderInit))
+        return renderInit()
     data = dict(code=request.args['code'], redirect_uri=REDIRECT_URI, grant_type='authorization_code')
     response = genius.get_raw_access_token(data=data, method='POST')
     parsed = ast.literal_eval(response.text)
@@ -53,6 +53,8 @@ def exchangeToken():
 
 @app.route('/query', methods = ['POST'])
 def querySongs():
+    if not (session):
+        return redirect(url_for(renderInit))
     global sgs
     sgs = []
     authorizeUser()
@@ -66,6 +68,8 @@ def querySongs():
 
 @app.route('/query/lyrics', methods = ['POST'])
 def getPhones():
+    if not (session):
+        return redirect(url_for(renderInit))
     sorted_list = []
     form = request.form['SongID'].split('-')
     selected = maps[form[0]]

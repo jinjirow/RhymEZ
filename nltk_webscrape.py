@@ -41,7 +41,7 @@ def getAccountInfo(TOKEN):
     return account['header_image_url'].encode('utf-8'), account['name'].encode('utf-8')
 
 def getSongs(query, TOKEN): # Returns a list of song titles and their respective api_paths
-    ph_l, titles, urls = [], [], []
+    titles, urls = [], []
     headers = {'Authorization': 'Bearer ' + TOKEN}
     search_url = BASE_URL + "/search"
     song_title = query
@@ -71,7 +71,7 @@ def findPhonemes(lyrics):
                     wfl.append(tagged)
                 vl.append(wfl)
         phonemes.append(vl)
-    accuracy = float(hc)/float(oc)
+    #accuracy = float(hc)/float(oc)
     return phonemes
 
 

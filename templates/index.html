@@ -1,5 +1,15 @@
 <!doctype html>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<head>
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script type="text/javascript">
+    $( function() {
+      $( "#tabs" ).tabs();
+    } );
+  </script>
+</head>
 <title>Genius Scrape</title>
 <meta charset="UTF-8">
 <body>
@@ -39,16 +49,23 @@
           </div>
           <div class="col-6 col-md-4">
             {% if phonemes %}
-            <ul class="nav nav-tabs">
-              <li class="active"><a href="#">Sounds</a></li>
-              <li class=><a href="#">Phonemes</a></li>
-            </ul>
-            <h4> Unique Sounds: {{ p_count }}</h4>
-            <ul>
-              {% for value in phonemes %}
-                <li><span style="color:{{ value.color|e }}">{{ value.sound|e }}</span> -  {{ value.count|e }}</li>
-              {% endfor %}
-            </ul>
+            <div id="tabs">
+              <ul>
+                <li><a href="#tabs-1">Sounds</a></li>
+                <li><a href="#tabs-2">Phonemes</a></li>
+              </ul>
+              <div id="tabs-1">
+                <h4> Unique Sounds: {{ p_count }}</h4>
+                <ul>
+                  {% for value in phonemes %}
+                    <li><span style="color:{{ value.color|e }}">{{ value.sound|e }}</span> -  {{ value.count|e }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+              <div id="tabs-2">
+                <p>rhyming words</p>
+              </div>
+            </div>
             {% endif %}
           </div>
         </div>
