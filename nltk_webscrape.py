@@ -97,26 +97,25 @@ def parsePhonemes(ph):
                     print('')
     return color_mappings
 
-def colorGraphemes(phonemes, sts):
+def colorGraphemes(phonemes, sts): # Trivial way to display all mapped colors using just their pronunciations
     final_div = ''
     for verse in phonemes:
         for line in verse:
             for word in line:
-                lines, linesum = '', ''
-                colors = []
                 sp = word.split('-*-')
-                lines += ' ' + str(sp[0])
                 try:
                     for sound in sp[1].split(' '):
                         if not sound == '':
-                            candidate = re.sub('\d', '', sound)
-                            color = str(sts[candidate].color)
-                            linesum += ("<span style='color: " + color + "'>-</span>   ")
+                            color = sts[re.sub('\d', '', sound)].color
+                            cs = re.sub('\d', '', sound)
+                            final_div += "<span class='" + cs + "'style='background-color:" + color + "'>" + sound + "</span>"
+                            print('')
                 except:
-                    print('?')
-            final_div += '\n'
-        final_div += '\n\n'
-    return
+                    final_div += '<span>' + word.split(' ')[0] + '</span>' # Word wasn't parsed correctly (no pronunciation)
+                final_div += '  '
+            final_div += '<br/>'
+        final_div += '<br/><br/>'
+    return final_div
 
 def find_rhymes(lyrics):
     regex = re.compile(r'[^a-zA-Z]')

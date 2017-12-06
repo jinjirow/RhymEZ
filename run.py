@@ -1,7 +1,7 @@
 import sys, operator, rauth, ast
 
 from flask import Flask, render_template, request, session, redirect, url_for
-from nltk_webscrape import getSongs, getLyrics, parsePhonemes, getAccountInfo
+from nltk_webscrape import getSongs, getLyrics, parsePhonemes, getAccountInfo, colorGraphemes
 from ss_params import CLIENT_ID, CLIENT_SECRET, BASE_URL, REDIRECT_URI, SECRET_KEY
 
 sgs = []
@@ -75,11 +75,12 @@ def getPhones():
     selected = maps[form[0]]
     lyrics, phonemes = getLyrics(selected, session['genius_token'])
     stats = parsePhonemes(phonemes)
+    pronouncing_div = colorGraphemes(phonemes, stats)
     for color in (sorted(stats.values(), key = operator.attrgetter('count'), reverse=True)):
         sorted_list.append(color)
     return render_template("index.html", lyrics = lyrics, songs = sgs[0], selected = form[1],
                            phonemes = sorted_list, p_count = sorted_list.__len__(), auth=True,
-                           acc=session['avatar_url'])
+                           acc=session['avatar_url'], pd = pronouncing_div)
 
 
 if __name__ == "__main__":

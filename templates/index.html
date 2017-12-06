@@ -1,14 +1,10 @@
 <!doctype html>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <head>
-  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-  <script type="text/javascript">
-    $( function() {
-      $( "#tabs" ).tabs();
-    } );
-  </script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="{{ url_for('static',filename='scripts/highlight.js') }}"></script>
+  <link  type="text/css" rel="stylesheet" href="{{ url_for('static',filename='css/styles.css') }}">
 </head>
 <title>Genius Scrape</title>
 <meta charset="UTF-8">
@@ -38,34 +34,42 @@
       <div class="container">
         <div class="row">
           <div class="col col-md-8">
-                {% if selected %}
-                  <h4>{{ selected }}</h4>
-                {% endif %}
+            {% if selected %}
+              <h4>{{ selected }}</h4>
+            {% endif %}
+            <ul class="nav nav-tabs">
+              <li class="active">
+                <a href="#1" data-toggle="tab">Lyrics</a>
+              </li>
+              <li>
+                <a href="#2" data-toggle="tab">Highlighted</a>
+              </li>
+            </ul>
+            <div class="tab-content ">
+              <div class="tab-pane active" id="1">
                 <center>
                   <pre>
                     {{ lyrics }}
                   </pre>
                 </center>
+              </div>
+              <div class="tab-pane" id="2">
+                <center>
+                  <div class="well">
+                    {{ pd|safe }}
+                  </div>
+                </center>
+              </div>
+            </div>
           </div>
           <div class="col-6 col-md-4">
             {% if phonemes %}
-            <div id="tabs">
-              <ul>
-                <li><a href="#tabs-1">Sounds</a></li>
-                <li><a href="#tabs-2">Phonemes</a></li>
+              <h4> Unique Sounds: {{ p_count }}</h4>
+              <ul class="nav nav-pills nav-stacked">
+                {% for value in phonemes %}
+                  <li><a class="selector" onclick="highlightByID('{{ value.sound|e  }}')"><span style="color:{{ value.color|e }}">{{ value.sound|e }}</span> -  {{ value.count|e }}</a></li>
+                {% endfor %}
               </ul>
-              <div id="tabs-1">
-                <h4> Unique Sounds: {{ p_count }}</h4>
-                <ul>
-                  {% for value in phonemes %}
-                    <li><span style="color:{{ value.color|e }}">{{ value.sound|e }}</span> -  {{ value.count|e }}</li>
-                  {% endfor %}
-                </ul>
-              </div>
-              <div id="tabs-2">
-                <p>rhyming words</p>
-              </div>
-            </div>
             {% endif %}
           </div>
         </div>
