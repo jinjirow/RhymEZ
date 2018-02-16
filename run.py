@@ -1,4 +1,7 @@
-import sys, operator, rauth, ast
+import sys
+import operator
+import rauth
+import ast
 
 from flask import Flask, render_template, request, session, redirect, url_for
 from nltk_webscrape import getSongs, getLyrics, parsePhonemes, getAccountInfo, colorGraphemes
