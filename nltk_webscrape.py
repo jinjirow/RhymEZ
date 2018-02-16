@@ -1,8 +1,8 @@
-# Phoneme detection using 'pronouncing' library.
 import requests
 import pronouncing
+import random
+import re
 from bs4 import BeautifulSoup
-import random, re
 from ss_params import BASE_URL
 from collections import defaultdict
 
