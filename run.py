@@ -4,14 +4,26 @@ from flask import Flask, render_template, request, session, redirect, url_for
 from nltk_webscrape import getSongs, getLyrics, parsePhonemes, getAccountInfo, colorGraphemes
 from ss_params import CLIENT_ID, CLIENT_SECRET, BASE_URL, REDIRECT_URI, SECRET_KEY
 
-sgs = []
+
 
 reload(sys)
 sys.setdefaultencoding('utf8')
 
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
+
+# Global 'Session' variables
 maps = { '0': 'ph' }
+SONGS = []
+SEARCHED = []
+QUERY = ''
+TITLES = None
+LYRICS = None
+SONGS = None
+P_COUNT = None
+PD = None
+SELECTED = None
+PHONEMES = None
 
 genius = rauth.OAuth2Service(
     client_id = CLIENT_ID,
@@ -27,7 +39,21 @@ def renderInit(): # Session should only exist if the user has authenticated with
         auth, acc, name = True, session['avatar_url'], session['name']
     else:
         auth, acc, name = False, '', ''
-    return render_template("index.html", auth=auth, url=acc, name=name)
+    if not SELECTED == None:
+        return render_template("results.html", auth=auth, url=acc, name=name, lyrics=LYRICS,
+            selected=SELECTED, songs=SONGS[0], p_count=P_COUNT, pd=PD, query=QUERY, phonemes=PHONEMES)
+    else:
+        return render_template("index.html", auth=auth, url=acc, name=name)
+
+@app.route('/upload')
+def uploadPage():
+    return render_template("upload.html", auth=True)
+
+@app.route('/lyrics')
+def lyricPage():
+    return render_template("lyrics.html", auth=True)
+
+
 
 
 @app.route('/login', methods=['POST'])
@@ -51,23 +77,27 @@ def exchangeToken():
     return renderInit()
 
 
+
 @app.route('/query', methods = ['POST'])
 def querySongs():
+    global QUERY, TITLES, SONGS
     if not (session):
         return redirect(url_for(renderInit))
-    global sgs
-    sgs = []
+    SONGS = []
     authorizeUser()
     query = request.form['QueryBox']
     titles, urls = getSongs(query, session['genius_token'])
-    sgs.append(titles)
+    SONGS.append(titles)
     for i, url in enumerate(urls):
         maps[str(i + 1)] = str(url)
-    return render_template("index.html", songs=titles, auth=True, acc=session['avatar_url'])
+    QUERY = query
+    TITLES = titles
+    return render_template("index.html", query=QUERY, songs=TITLES, auth=True, acc=session['avatar_url'])
 
 
 @app.route('/query/lyrics', methods = ['POST'])
 def getPhones():
+    global SONGS, P_COUNT, PD, SELECTED, LYRICS, PHONEMES
     if not (session):
         return redirect(url_for(renderInit))
     sorted_list = []
@@ -78,9 +108,14 @@ def getPhones():
     pronouncing_div = colorGraphemes(phonemes, stats)
     for color in (sorted(stats.values(), key = operator.attrgetter('count'), reverse=True)):
         sorted_list.append(color)
-    return render_template("index.html", lyrics = lyrics, songs = sgs[0], selected = form[1],
-                           phonemes = sorted_list, p_count = sorted_list.__len__(), auth=True,
-                           acc=session['avatar_url'], pd = pronouncing_div)
+    PHONEMES = sorted_list
+    LYRICS = lyrics
+    SELECTED = form[1]
+    PD = pronouncing_div
+    P_COUNT = sorted_list.__len__()
+    return render_template("results.html", lyrics = lyrics, songs = SONGS[0], selected = form[1],
+                           phonemes=sorted_list, p_count=sorted_list.__len__(), auth=True,
+                           acc=session['avatar_url'], pd=pronouncing_div, query=QUERY)
 
 
 if __name__ == "__main__":

@@ -1,6 +1,49 @@
 {% extends 'index.html' %}
-{% block container %}
-  {% if song %}
-  You said: {{ song }}
-  {% endif %}
+{% block content %}
+  {% if lyrics %}
+    <div style="margin-left: 20px">
+      {% if selected %}
+        <h4>{{ selected }}</h4>
+      {% endif %}
+      <div>
+        <div class="row">
+          <div class="col col-md-8">
+            <ul class="nav nav-tabs">
+              <li class="nav-item">
+                <a class="nav-link active" href="#1" data-toggle="tab">Lyrics</a>
+              </li>
+              <li>
+                <a class="nav-link" href="#2" data-toggle="tab">Highlighted</a>
+              </li>
+            </ul>
+            <div class="tab-content " >
+              <div class="tab-pane active" id="1">
+                <center>
+                  <pre style="height: 620px; overflow: scroll">
+                    {{ lyrics }}
+                  </pre>
+                </center>
+              </div>
+              <div class="tab-pane" id="2">
+                <center>
+                  <div class="well" style="height: 620px; overflow: scroll">
+                    {{ pd|safe }}
+                  </div>
+                </center>
+              </div>
+            </div>
+          </div>
+          <div class="col-2 col-md-4" style="overflow: scroll">
+            {% if phonemes %}
+              <h4> Unique Sounds: {{ p_count }}</h4>
+              <ul class="nav flex-column nav-pills" style="overflow: scroll; height: 674px">
+                {% for value in phonemes %}
+                  <li><a class="nav-link" onclick="highlightByID('{{ value.sound|e  }}')"><span style="color:{{ value.color|e }}">{{ value.sound|e }}</span> -  {{ value.count|e }}</a></li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% endif %}
 {% endblock %}

@@ -17,7 +17,6 @@ class P_Color:
     def increment(self):
         self.count += 1
 
-
 # API Requests
 
 def getLyrics(path, TOKEN): # Scrape Genius website for lyrics. Followed this example from: https://bigishdata.com/2016/09/27/getting-song-lyrics-from-geniuss-api-scraping/
@@ -125,3 +124,4 @@ def find_rhymes(lyrics):
         for phone in pronouncing.phones_for_word(word):
             rhyme_dict[tuple(phone.split()[-2:])].append(word)
     return rhyme_dict
+

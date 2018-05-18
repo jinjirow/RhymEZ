@@ -1,0 +1,51 @@
+{% extends 'index.html' %}
+{% block content %}
+  <div class="container">
+  <form>
+    <div class="row">
+      <div class="co col-6">
+        <h4>Select a text file</h4>
+          <input type="file" id="BS">
+        <br/>
+        <h4>Copy/Paste</h4>
+        <textarea rows=10 cols="60">
+        
+        </textarea>
+        <br/>
+      </div>
+      <div class="col">
+        <h4>Metadata</h4>
+        <div class="form-group">
+          <label for="inputTitle">Title</label>
+          <input class="form-control" id="inputTitle" placeholder="">
+        </div>
+        <div class="form-group">
+          <label for="inputArtist">Artist</label>
+          <input class="form-control" id="inputArtist" placeholder="">
+        </div>
+        <div class="form-group">
+          <label for="inputGenre">Genre (Optional)</label>
+          <input class="form-control" id="inputGenre" placeholder="">
+        </div>
+        <div class="form-group">
+          <label for="typeSelect">Type</label>
+          <select class="form-control" id="typeSelect">
+            <option>Song</option>
+            <option>Poem</option>
+            <option>Quote</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <button type="submit" class="btn my-2 my-sm-0" style="border-color: rgb(206 212 218);">Submit</button>
+      </div>
+    </div>
+  </form>
+  </div>
+  <script>
+  //Used for overwriting default button css
+    $('#BS').filestyle({
+      buttonName : 'btn btn-outline-secondary',
+              buttonText : ' File selection'
+    });
+  </script>
+{% endblock %}
