@@ -96,7 +96,6 @@ def querySongs():
     QUERY = query
     TITLES = titles
     if not SELECTED == None:
-        print('ye')
         return render_template("results.html", query=QUERY, songs=TITLES, auth=True, acc=session['avatar_url'],
             selected=SELECTED, p_count=P_COUNT, pd=PD, phonemes=PHONEMES, lyrics=LYRICS)
     else:
