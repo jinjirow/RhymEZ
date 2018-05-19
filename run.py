@@ -95,7 +95,12 @@ def querySongs():
         maps[str(i + 1)] = str(url)
     QUERY = query
     TITLES = titles
-    return render_template("index.html", query=QUERY, songs=TITLES, auth=True, acc=session['avatar_url'])
+    if not SELECTED == None:
+        print('ye')
+        return render_template("results.html", query=QUERY, songs=TITLES, auth=True, acc=session['avatar_url'],
+            selected=SELECTED, p_count=P_COUNT, pd=PD, phonemes=PHONEMES, lyrics=LYRICS)
+    else:
+        return render_template("index.html", query=QUERY, songs=TITLES, auth=True, acc=session['avatar_url'])
 
 
 @app.route('/query/lyrics', methods = ['POST'])
