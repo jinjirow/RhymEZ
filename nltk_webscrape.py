@@ -9,11 +9,16 @@ from collections import defaultdict
 
 verse_list = []
 
+COUNTER = 0
+
 class P_Color:
     def __init__(self, color, sound):
+        global COUNTER
         self.count = 1
         self.color = color
         self.sound = sound
+        self.id = COUNTER
+        COUNTER += 1
     def increment(self):
         self.count += 1
 
@@ -91,9 +96,10 @@ def parsePhonemes(ph):
                                 color_mappings[candidate] = new_color
                             else:
                                 color_mappings[candidate].count += 1
-                except:
+                except Exception as ex:
                     # Could not parse word? Should be fixed
                     print('')
+    print(color_mappings)
     return color_mappings
 
 def colorGraphemes(phonemes, sts): # Trivial way to display all mapped colors using just their pronunciations
@@ -103,13 +109,15 @@ def colorGraphemes(phonemes, sts): # Trivial way to display all mapped colors us
             for word in line:
                 sp = word.split('-*-')
                 try:
+                    test = sp[1].split(' ')
                     for sound in sp[1].split(' '):
                         if not sound == '':
                             color = sts[re.sub('\d', '', sound)].color
                             cs = re.sub('\d', '', sound)
                             final_div += "<span class='" + cs + "'style='background-color:" + color + "'>" + sound + "</span>"
                             print('')
-                except:
+                except Exception as e:
+                    print(type(e))
                     final_div += '<span>' + word.split(' ')[0] + '</span>' # Word wasn't parsed correctly (no pronunciation)
                 final_div += '  '
             final_div += '<br/>'

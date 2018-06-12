@@ -8,6 +8,7 @@
   <script type="text/javascript" src="{{ url_for('static',filename='scripts/highlight.js') }}"></script>
   <script type="text/javascript" src="{{ url_for ('static', filename='js/bootstrap-filestyle.min.js') }}"> </script>
   <link  type="text/css" rel="stylesheet" href="{{ url_for('static',filename='css/styles.css') }}">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
 </head>
 <title>Genius Scrape</title>
 <meta charset="UTF-8">
@@ -29,18 +30,20 @@
         <button class="btn my-2 my-sm-0" type="submit" style="border-color: rgb(206, 212, 218);">Go</button>
       </form>
     </nav>
-    <!-- EndNav !-->
     <br/>
+    <!-- EndNav !-->
     {% if songs %}
       <div style="width: 30%; margin-right: 20px; float: right">
         <h4>Results for: {{ query }}</h4>
         <div class="card">
-          {% for s in songs %}
-            <form action="{{ url_for('getPhones') }}" method="post">
-              <input type="hidden" value="{{loop.index}}-{{ s }}" name="SongID"/>
-              <button class="btn btn-default" type="submit" value="{{ s }}">{{ s }}</button>
-            </form>
-          {% endfor %}
+            <ul class="list-group list-group-flush">
+            {% for s in songs %}
+              <form action="{{ url_for('getPhones') }}" method="post">
+                <input type="hidden" value="{{loop.index}}-{{ s }}" name="SongID"/>
+                <input class="list-group-item" type="submit" value="{{ s }}"></input>
+              </form>
+            {% endfor %}
+            </ul>
         </div>
       </div>
     {% endif %}

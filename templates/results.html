@@ -6,44 +6,98 @@
         <h4>{{ selected }}</h4>
       {% endif %}
       <div>
-        <div class="row">
-          <div class="col col-md-8">
-            <ul class="nav nav-tabs">
-              <li class="nav-item">
-                <a class="nav-link active" href="#1" data-toggle="tab">Lyrics</a>
-              </li>
-              <li>
-                <a class="nav-link" href="#2" data-toggle="tab">Highlighted</a>
-              </li>
-            </ul>
-            <div class="tab-content " >
-              <div class="tab-pane active" id="1">
-                <center>
-                  <pre style="height: 620px; overflow: scroll">
-                    {{ lyrics }}
-                  </pre>
-                </center>
-              </div>
-              <div class="tab-pane" id="2">
-                <center>
-                  <div class="well" style="height: 620px; overflow: scroll">
-                    {{ pd|safe }}
-                  </div>
-                </center>
-              </div>
-            </div>
-          </div>
-          <div class="col-2 col-md-4" style="overflow: scroll">
-            {% if phonemes %}
-              <h4> Unique Sounds: {{ p_count }}</h4>
-              <ul class="nav flex-column nav-pills" style="overflow: scroll; height: 674px">
-                {% for value in phonemes %}
-                  <li><a class="nav-link" onclick="highlightByID('{{ value.sound|e  }}')"><span style="color:{{ value.color|e }}">{{ value.sound|e }}</span> -  {{ value.count|e }}</a></li>
-                {% endfor %}
-              </ul>
-            {% endif %}
-          </div>
-        </div>
-      </div>
-    {% endif %}
+	      <form action="{{ url_for('saveLyric') }}">
+	        <div class="row">
+	          <div class="col col-md-8">
+	            <ul class="nav nav-tabs">
+	              <li class="nav-item">
+	                <a class="nav-link active" href="#1" style="color: black;" data-toggle="tab">Lyrics</a>
+	              </li>
+	              <li>
+	                <a class="nav-link" href="#2" style="color: black;" data-toggle="tab">Highlighted</a>
+	              </li>
+  	              <li>
+	                <a class="nav-link" href="#3" style="color: black;" data-toggle="tab">Metrics</a>
+	              </li>
+	            </ul>
+	            <div class="tab-content " >
+	              <div class="tab-pane active" id="1">
+	                <center>
+	                  <pre style="height: 620px; overflow: scroll" name="lyricsForm">
+	                    {{ lyrics }}
+	                  </pre>
+	                </center>
+	              </div>
+	              <div class="tab-pane" id="2">
+	                <center>
+	                  <div class="well" style="height: 620px; overflow: scroll">
+	                    {{ pd|safe }}
+	                  </div>
+	                </center>
+	              </div>
+  	              <div class="tab-pane" id="3">
+	                <center>
+	                  <div class="well" style="height: 620px; overflow: scroll">
+	                    	<canvas id="pieDiv"></canvas>
+		                    <script>
+		                   		var ctx = document.getElementById("pieDiv");
+		                    	// And for a doughnut chart
+								var chart = new Chart(ctx, {
+								    // The type of chart we want to create
+								    type: 'doughnut',
+
+								    // The data for our dataset
+								    data: {
+								        labels: [{% for value in phonemes %}
+										               "{{ value.sound|e }}",
+										              {% endfor %}],
+								        datasets: [{
+								            label: "My First dataset",
+								            backgroundColor: 'rgb(255, 99, 132)',
+								            borderColor: 'rgb(255, 99, 132)',
+								            data: [{% for value in phonemes %}
+							                  {{ value.count|e }},
+							                {% endfor %}],
+									        }]
+								    },
+
+								    // Configuration options go here
+								    options: {}
+
+								});
+								/*
+							    window.onload = function(){
+								    var ctx = document.getElementById("pieDiv").getContext("2d");
+								    window.myObjBar = new Chart(ctx).Bar(barChartData, {
+								          responsive : true
+								    });
+
+								    {% for value in phonemes %}
+								    myObjBar.datasets[0].bars[{{ value.id }}].fillColor = "{{ value.color|e }}"; //bar 1
+								    {% endfor %} 
+
+								    myObjBar.update();
+								}
+								*/
+							</script>
+	                  </div>
+	                </center>
+	              </div>
+	            </div>
+	          </div>
+	          <div class="col-2 col-md-4" style="overflow: scroll">
+	            {% if phonemes %}
+	              <h4> Unique Sounds: {{ p_count }}</h4>
+	              <ul class="nav flex-column nav-pills" style="overflow: scroll; height: 674px">
+	                {% for value in phonemes %}
+	                  <li><a class="nav-link" onclick="highlightByID('{{ value.sound|e  }}')"><span style="color:{{ value.color|e }}">{{ value.sound|e }}</span> -  {{ value.count|e }}</a></li>
+	                {% endfor %}
+	              </ul>
+	            {% endif %}
+	          </div>
+			</div>
+		</form>
+	  </div>
+  	</div>
+  {% endif %}
 {% endblock %}

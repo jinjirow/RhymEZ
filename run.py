@@ -2,13 +2,14 @@ import sys
 import operator
 import rauth
 import ast
+import sqlite3 as sql
 
 from flask import Flask, render_template, request, session, redirect, url_for
 from nltk_webscrape import getSongs, getLyrics, parsePhonemes, getAccountInfo, colorGraphemes
 from ss_params import CLIENT_ID, CLIENT_SECRET, BASE_URL, REDIRECT_URI, SECRET_KEY
 
 
-
+# Set default text encoding
 reload(sys)
 sys.setdefaultencoding('utf8')
 
@@ -28,6 +29,8 @@ PD = None
 SELECTED = None
 PHONEMES = None
 
+# Genius Authentication Flow
+
 genius = rauth.OAuth2Service(
     client_id = CLIENT_ID,
     client_secret = CLIENT_SECRET,
@@ -36,8 +39,10 @@ genius = rauth.OAuth2Service(
     access_token_url = BASE_URL + '/oauth/token',
 )
 
+
 @app.route('/')
-def renderInit(): # Session should only exist if the user has authenticated with Genius
+def renderInit():
+    # Session should only exist if the user has authenticated with Genius
     if(session):
         auth, acc, name = True, session['avatar_url'], session['name']
     else:
@@ -48,15 +53,43 @@ def renderInit(): # Session should only exist if the user has authenticated with
     else:
         return render_template("index.html", auth=auth, url=acc, name=name)
 
+
 @app.route('/upload')
 def uploadPage():
     return render_template("upload.html", auth=True)
 
+
+@app.route('/upload/submit', methods=['POST'])
+def submitLyric():
+    con = sql.connect("phscrape.db")
+    cur = con.cursor()
+    query = "INSERT INTO results (title,author,type,genre,lyrics,highlighted,phonemes,count) VALUES (?,?,?,?,?,?,?,?)"
+    title = request.form['inputTitle']
+    auth = request.form['inputArtist']
+    ltype = request.form['typeSelect']
+    genre = request.form['inputGenre']
+    lyric = request.form['inputLyric']
+    highlight = "test_highlight2"
+    phoneme = "test_phoneme2"
+    count = "test_count2"
+    cur.execute(query, (title, auth, ltype, genre, lyric, highlight, phoneme, count))
+    con.commit()
+    con.close()
+    return render_template("upload.html", auth=True)
+
+
 @app.route('/lyrics')
 def lyricPage():
-    return render_template("lyrics.html", auth=True)
-
-
+    con = sql.connect("phscrape.db")
+    cur = con.cursor()
+    cur.execute("select * from results")
+    rows = cur.fetchall()
+    con.close()
+    if not SELECTED == None:
+        return render_template("lyrics.html", auth=True, lyrics=LYRICS,
+            selected=SELECTED, songs=SONGS[0], p_count=P_COUNT, pd=PD, query=QUERY, phonemes=PHONEMES)
+    else:
+        return render_template("lyrics.html", auth=True)
 
 
 @app.route('/login', methods=['POST'])
@@ -111,6 +144,7 @@ def getPhones():
     form = request.form['SongID'].split('-')
     selected = maps[form[0]]
     lyrics, phonemes = getLyrics(selected, session['genius_token'])
+    print(phonemes)
     stats = parsePhonemes(phonemes)
     pronouncing_div = colorGraphemes(phonemes, stats)
     for color in (sorted(stats.values(), key = operator.attrgetter('count'), reverse=True)):
@@ -123,6 +157,13 @@ def getPhones():
     return render_template("results.html", lyrics = lyrics, songs = SONGS[0], selected = form[1],
                            phonemes=sorted_list, p_count=sorted_list.__len__(), auth=True,
                            acc=session['avatar_url'], pd=pronouncing_div, query=QUERY)
+
+@app.route('/query/lyrics/save', methods = ['POST'])
+def saveLyric():
+    return render_template("results.html", lyrics = lyrics, songs = SONGS[0], selected = form[1],
+                       phonemes=sorted_list, p_count=sorted_list.__len__(), auth=True,
+                       acc=session['avatar_url'], pd=pronouncing_div, query=QUERY)
+    return
 
 
 if __name__ == "__main__":
