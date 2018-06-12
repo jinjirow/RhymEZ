@@ -5,7 +5,7 @@ import ast
 import sqlite3 as sql
 
 from flask import Flask, render_template, request, session, redirect, url_for
-from nltk_webscrape import getSongs, getLyrics, parsePhonemes, getAccountInfo, colorGraphemes
+from nltk_webscrape import getSongs, getLyrics, parsePhonemes, getAccountInfo, colorGraphemes, song_diff, song_diff2
 from ss_params import CLIENT_ID, CLIENT_SECRET, BASE_URL, REDIRECT_URI, SECRET_KEY
 
 
@@ -28,6 +28,7 @@ P_COUNT = None
 PD = None
 SELECTED = None
 PHONEMES = None
+COMPARE = []
 
 # Genius Authentication Flow
 
@@ -137,14 +138,13 @@ def querySongs():
 
 @app.route('/query/lyrics', methods = ['POST'])
 def getPhones():
-    global SONGS, P_COUNT, PD, SELECTED, LYRICS, PHONEMES
+    global SONGS, P_COUNT, PD, SELECTED, LYRICS, PHONEMES, COMPARE
     if not (session):
         return redirect(url_for(renderInit))
     sorted_list = []
     form = request.form['SongID'].split('-')
     selected = maps[form[0]]
     lyrics, phonemes = getLyrics(selected, session['genius_token'])
-    print(phonemes)
     stats = parsePhonemes(phonemes)
     pronouncing_div = colorGraphemes(phonemes, stats)
     for color in (sorted(stats.values(), key = operator.attrgetter('count'), reverse=True)):
@@ -154,6 +154,10 @@ def getPhones():
     SELECTED = form[1]
     PD = pronouncing_div
     P_COUNT = sorted_list.__len__()
+    COMPARE.append(stats)
+    if (COMPARE.__len__() > 1):
+        diff_test = song_diff(COMPARE[0], COMPARE[1])
+        diff_test2 = song_diff2(COMPARE[0], COMPARE[1])
     return render_template("results.html", lyrics = lyrics, songs = SONGS[0], selected = form[1],
                            phonemes=sorted_list, p_count=sorted_list.__len__(), auth=True,
                            acc=session['avatar_url'], pd=pronouncing_div, query=QUERY)

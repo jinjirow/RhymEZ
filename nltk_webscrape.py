@@ -116,13 +116,33 @@ def song_diff(song_1, song_2):
 
     count = 0
     for key in similar:
-        count += abs((song_1[key] - song_2[key]))
+        #count += abs((song_1[key].count - song_2[key].count))
+        count += abs((song_1[key].count - song_2[key].count)/float(min(song_1[key].count, song_2[key].count)))
 
     metric = (float(count) + 1)/(float(len(similar)) + 1)
-    metric = metric * len(difference)
+    metric = metric * (len(difference) + 1)
 
     return metric
 
+def song_diff2(song_1, song_2):
+    ph_1 = set(song_1.keys())
+    ph_2 = set(song_2.keys())
+
+    similar = ph_1.intersection(ph_2)
+    difference = (ph_1.difference(ph_2)).union(ph_2.difference(ph_1))
+
+    count = 1
+    for key in similar:
+        print "Song1 Key: ", str(song_1[key].count)
+        print "Song2 Key: ", str(song_2[key].count)
+        count += (song_1[key].count - song_2[key].count + 1.0)/float((song_1[key].count + song_2[key].count))
+
+    #metric = (float(count) + 1)/(float(len(similar)) + 1)
+
+    print len(difference)
+    metric = count * (len(difference)/(math.log(float(len(ph_1) + len(ph_2))))+1.0)
+
+    return metric
 
 def colorGraphemes(phonemes, sts): # Trivial way to display all mapped colors using just their pronunciations
     final_div = ''
