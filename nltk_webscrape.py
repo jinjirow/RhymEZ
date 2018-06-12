@@ -2,6 +2,7 @@ import requests
 import pronouncing
 import random
 import re
+import math
 from bs4 import BeautifulSoup
 from ss_params import BASE_URL
 from collections import defaultdict
@@ -57,6 +58,10 @@ def getSongs(query, TOKEN): # Returns a list of song titles and their respective
         urls.append((hit["result"]["api_path"]))
     return titles, urls
 
+"""
+Takes all the words and maps the phonemes for each word
+:return:
+"""
 def findPhonemes(lyrics):
     phonemes = []
     hc, oc = 0, 0
@@ -98,9 +103,26 @@ def parsePhonemes(ph):
                                 color_mappings[candidate].count += 1
                 except Exception as ex:
                     # Could not parse word? Should be fixed
-                    print('')
-    print(color_mappings)
+                    continue
+    #print(color_mappings)
     return color_mappings
+
+def song_diff(song_1, song_2):
+    ph_1 = set(song_1.keys())
+    ph_2 = set(song_2.keys())
+
+    similar = ph_1.intersection(ph_2)
+    difference = (ph_1.difference(ph_2)).union(ph_2.difference(ph_1))
+
+    count = 0
+    for key in similar:
+        count += abs((song_1[key] - song_2[key]))
+
+    metric = (float(count) + 1)/(float(len(similar)) + 1)
+    metric = metric * len(difference)
+
+    return metric
+
 
 def colorGraphemes(phonemes, sts): # Trivial way to display all mapped colors using just their pronunciations
     final_div = ''
@@ -117,7 +139,7 @@ def colorGraphemes(phonemes, sts): # Trivial way to display all mapped colors us
                             final_div += "<span class='" + cs + "'style='background-color:" + color + "'>" + sound + "</span>"
                             print('')
                 except Exception as e:
-                    print(type(e))
+                    #print(type(e))
                     final_div += '<span>' + word.split(' ')[0] + '</span>' # Word wasn't parsed correctly (no pronunciation)
                 final_div += '  '
             final_div += '<br/>'
@@ -132,4 +154,3 @@ def find_rhymes(lyrics):
         for phone in pronouncing.phones_for_word(word):
             rhyme_dict[tuple(phone.split()[-2:])].append(word)
     return rhyme_dict
-
