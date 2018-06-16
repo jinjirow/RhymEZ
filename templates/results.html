@@ -53,8 +53,9 @@
 										              {% endfor %}],
 								        datasets: [{
 								            label: "My First dataset",
-								            backgroundColor: 'rgb(255, 99, 132)',
-								            borderColor: 'rgb(255, 99, 132)',
+								            backgroundColor: [{% for value in phonemes %}
+								            					"{{value.color}}",
+								            					{%endfor%}],
 								            data: [{% for value in phonemes %}
 							                  {{ value.count|e }},
 							                {% endfor %}],

@@ -155,6 +155,7 @@ def getPhones():
     PD = pronouncing_div
     P_COUNT = sorted_list.__len__()
     COMPARE.append(stats)
+
     if (COMPARE.__len__() > 1):
         diff_test = song_diff(COMPARE[0], COMPARE[1])
         diff_test2 = song_diff2(COMPARE[0], COMPARE[1])
