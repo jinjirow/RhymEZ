@@ -3,3 +3,4 @@ pronouncing==0.1.5
 Flask==0.12.2
 rauth==0.7.3
 beautifulsoup4==4.6.1
+gunicorn==19.9.0
