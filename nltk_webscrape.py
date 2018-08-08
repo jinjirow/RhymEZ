@@ -25,7 +25,7 @@ class P_Color:
 
 # API Requests
 
-def getLyrics(path, TOKEN): # Scrape Genius website for lyrics. Followed this example from: https://bigishdata.com/2016/09/27/getting-song-lyrics-from-geniuss-api-scraping/
+def getLyrics(path, TOKEN): # Scrape Genius website for lyrics
     headers = {'Authorization': 'Bearer ' + TOKEN}
     song_url = BASE_URL + path
     response = requests.get(song_url, headers=headers)
@@ -106,6 +106,10 @@ def parsePhonemes(ph):
                     continue
     #print(color_mappings)
     return color_mappings
+
+"""
+ WIP: Diff functions used for computing lyrical similarity
+"""
 
 def song_diff(song_1, song_2):
     ph_1 = set(song_1.keys())

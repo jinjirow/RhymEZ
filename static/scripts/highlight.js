@@ -9,6 +9,9 @@ function highlightByID(id){
     past_color = elements[0].style.backgroundColor
     highlightSpans(elements, "yellow")
   }
+  if(elements[0].style.backgroundColor !== "yellow"){
+    highlightSpans(elements, "yellow")
+  }
 }
 function highlightSpans(elements, color){
     for(var i=0; i<elements.length; i++){

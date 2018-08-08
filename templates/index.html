@@ -19,9 +19,10 @@
       <a class="navbar-brand">Phoneme Scrape</a>
       <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
-          <a class="nav-item nav-link active" href="../">Results <span class="sr-only">(current)</span></a>
-          <a class="nav-item nav-link" href="../upload">Upload</a>
-          <a class="nav-item nav-link" href="../lyrics">My Lyrics</a>
+          <!--<a class="nav-item nav-link active" href="../">Results <span class="sr-only">(current)</span></a>!-->
+          <!-- Upload and saved lyric section are still a WIP !-->
+          <!--<a class="nav-item nav-link" href="../upload">Upload</a>
+          <a class="nav-item nav-link" href="../lyrics">My Lyrics</a>!-->
         </div>
       </div>
       </div>
@@ -36,11 +37,11 @@
       <div style="width: 30%; margin-right: 20px; float: right">
         <h4>Results for: {{ query }}</h4>
         <div class="card">
-            <ul class="list-group list-group-flush">
+            <ul class="list-group list-group-flush" style="width: 100%; overflow: hidden">
             {% for s in songs %}
               <form action="{{ url_for('getPhones') }}" method="post">
                 <input type="hidden" value="{{loop.index}}-{{ s }}" name="SongID"/>
-                <input class="list-group-item" type="submit" value="{{ s }}"></input>
+                <input class="list-group-item" type="submit" value="{{ s }}" style="width: 100%" />
               </form>
             {% endfor %}
             </ul>

@@ -59,12 +59,18 @@ def renderInit():
 def uploadPage():
     return render_template("upload.html", auth=True)
 
-
-@app.route('/upload/submit', methods=['POST'])
-def submitLyric():
+def saveNewLyric(title, auth, ltype, genre, lyric, highlight, phoneme, count):
+    ph = "placeholder"
     con = sql.connect("phscrape.db")
     cur = con.cursor()
     query = "INSERT INTO results (title,author,type,genre,lyrics,highlighted,phonemes,count) VALUES (?,?,?,?,?,?,?,?)"
+    cur.execute(query, (title, auth, ltype, genre, lyric, highlight, ph, count))
+    con.commit()
+    con.close()
+
+
+@app.route('/upload/submit', methods=['POST'])
+def submitLyric():
     title = request.form['inputTitle']
     auth = request.form['inputArtist']
     ltype = request.form['typeSelect']
@@ -73,9 +79,7 @@ def submitLyric():
     highlight = "test_highlight2"
     phoneme = "test_phoneme2"
     count = "test_count2"
-    cur.execute(query, (title, auth, ltype, genre, lyric, highlight, phoneme, count))
-    con.commit()
-    con.close()
+    saveNewLyric(title, auth, ltype, genre, lyric, highlight, phoneme, count)
     return render_template("upload.html", auth=True)
 
 
@@ -163,12 +167,22 @@ def getPhones():
                            phonemes=sorted_list, p_count=sorted_list.__len__(), auth=True,
                            acc=session['avatar_url'], pd=pronouncing_div, query=QUERY)
 
-@app.route('/query/lyrics/save', methods = ['POST'])
+@app.route('/query/lyrics/save', methods = ['POST', 'GET'])
 def saveLyric():
-    return render_template("results.html", lyrics = lyrics, songs = SONGS[0], selected = form[1],
+    global sorted_list, lyrics, pronouncing_div
+    sp = SELECTED.encode('utf-8').split("by")
+    title = sp[0]
+    author = sp[1]
+    ltype = "Song"
+    genre = "Placeholder"
+    lyric = LYRICS
+    highlight = PD
+    phoneme = PHONEMES
+    count = P_COUNT
+    saveNewLyric(title, author, ltype, genre, lyric, highlight, phoneme, count)
+    return render_template("results.html", lyrics = lyrics, songs = SONGS[0], selected = SELECTED,
                        phonemes=sorted_list, p_count=sorted_list.__len__(), auth=True,
-                       acc=session['avatar_url'], pd=pronouncing_div, query=QUERY)
-    return
+                       pd=pronouncing_div, query=QUERY)
 
 
 if __name__ == "__main__":

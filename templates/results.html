@@ -6,7 +6,8 @@
         <h4>{{ selected }}</h4>
       {% endif %}
       <div>
-	      <form action="{{ url_for('saveLyric') }}">
+	      <form action="{{ url_for('saveLyric') }}" type="post">
+		  	<!--<button type="submit">save</button>!-->
 	        <div class="row">
 	          <div class="col col-md-8">
 	            <ul class="nav nav-tabs">
