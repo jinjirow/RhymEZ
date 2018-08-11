@@ -34,7 +34,7 @@ def getLyrics(path, TOKEN): # Scrape Genius website for lyrics
     page_url = "http://genius.com" + path
     page = requests.get(page_url)
     html = BeautifulSoup(page.text, "html.parser")
-    verses = html.find('div', class_='lyrics').get_text().encode('utf-8')
+    verses = html.find('div', class_='lyrics').get_text()
     return verses, findPhonemes(verses.split("\n\n"))
 
 def getAccountInfo(TOKEN):
@@ -54,7 +54,7 @@ def getSongs(query, TOKEN): # Returns a list of song titles and their respective
     response = requests.get(search_url, params=params, headers=headers)
     json = response.json()
     for hit in json["response"]["hits"]:
-        titles.append(str((hit["result"]["full_title"]).encode('utf-8')))
+        titles.append(str((hit["result"]["full_title"])))
         urls.append((hit["result"]["api_path"]))
     return titles, urls
 
@@ -74,7 +74,8 @@ def findPhonemes(lyrics):
                 for word in line.split(' '):
                     phones = pronouncing.phones_for_word(re.sub('[^0-9a-zA-Z]+', '', word.lower())) # returns CMU Pronouncing dictionary phonemes for each word
                     #syllables = str(pronouncing.syllable_count(str(phones[0])))
-                    tagged = (word  + ' -*- ' + str(phones[0].encode('utf-8')) if (phones.__len__() > 0) else (word + ' (???)'))
+                    #tagged = (word  + ' -*- ' + str(phones[0].encode('utf-8')) if (phones.__len__() > 0) else (word + ' (???)'))
+                    tagged = (word + ' -*- ' + str(phones[0]) if (phones.__len__() > 0) else (word + ' (???)'))
                     oc += 1
                     hc += 1 if(phones.__len__() > 0) else 0
                     wfl.append(tagged)
@@ -137,13 +138,13 @@ def song_diff2(song_1, song_2):
 
     count = 1
     for key in similar:
-        print "Song1 Key: ", str(song_1[key].count)
-        print "Song2 Key: ", str(song_2[key].count)
+        print("Song1 Key: ", str(song_1[key].count))
+        print("Song2 Key: ", str(song_2[key].count))
         count += (song_1[key].count - song_2[key].count + 1.0)/float((song_1[key].count + song_2[key].count))
 
     #metric = (float(count) + 1)/(float(len(similar)) + 1)
 
-    print len(difference)
+    print(len(difference))
     metric = count * (len(difference)/(math.log(float(len(ph_1) + len(ph_2))))+1.0)
 
     return metric

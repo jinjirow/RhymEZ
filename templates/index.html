@@ -40,7 +40,7 @@
             <ul class="list-group list-group-flush" style="width: 100%; overflow: hidden">
             {% for s in songs %}
               <form action="{{ url_for('getPhones') }}" method="post">
-                <input type="hidden" value="{{loop.index}}-{{ s }}" name="SongID"/>
+                <input type="hidden" value="{{loop.index}}-{{ s }}" name="SongID" style="text-align: left"/>
                 <input class="list-group-item" type="submit" value="{{ s }}" style="width: 100%" />
               </form>
             {% endfor %}

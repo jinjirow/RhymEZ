@@ -10,8 +10,8 @@ from ss_params import CLIENT_ID, CLIENT_SECRET, BASE_URL, REDIRECT_URI, SECRET_K
 
 
 # Set default text encoding
-reload(sys)
-sys.setdefaultencoding('utf8')
+#reload(sys)
+#sys.setdefaultencoding('utf8')
 
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
