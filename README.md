@@ -2,7 +2,7 @@
 
 An experiment in natural language processing and lyrics.
 
-### Prerequisites
+### Dependencies
 
 Flask
 
