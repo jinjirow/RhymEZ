@@ -4,7 +4,7 @@ An experiment in natural language processing and lyrics.
 
 ### Dependencies
 
-Flask
+Flask, BeautifulSoup, RAuth, Pronouncing
 
 ### Usage
 
