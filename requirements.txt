@@ -1,4 +1,4 @@
-requests==2.18.4
+requests==2.20.0
 pronouncing==0.1.5
 Flask==0.12.2
 rauth==0.7.3
